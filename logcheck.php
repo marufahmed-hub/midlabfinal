@@ -1,35 +1,50 @@
 <?php
-	session_start();
 	
-	if( isset($_REQUEST['Login'])){
-		$uname = $_REQUEST['uname'];
-		$password =  $_REQUEST['password'];
+	session_start();
+
+	if(isset($_REQUEST['login']))
+	{
 		
-		if(empty(trim($uname)) || empty(trim($password))){
-			echo "Null submission found!";
-		}else{
 
-			$file = fopen('user.txt', 'r');
-			$user = fread($file, filesize('user.txt'));
-			$data = explode('|', $user);
+		if(empty($_REQUEST['uidl']) || empty($_REQUEST['upasswordl']))
+		{
 
-			if( trim($data[0]) == $uname && trim($data[1]) == $password){
-				//$_SESSION['uname'] = $uname;
-				//$_SESSION['pass'] = $password;
-				setcookie('username', $uid, time()+3600, '/');
+			echo "Null Submission found";
+			header("location:login.php");
+		}
+		else
+		{
+			$id=$_REQUEST['uidl'];
+			$password=$_REQUEST['upasswordl'];
+			$myfile=fopen('registration.txt','r');
+			while(!feof($myfile))
+			{
+				$line=fgets($myfile);
+				$data=explode('|', $line);
+				if($id==$data[0]&&$password==$data[1])
+				{
+					$_SESSION['id']=$id;
+					$_SESSION['password']=$password;
+					$_SESSION['name']=$data[2];
+					fclose($myfile);
+					header("location:user.php");
+				}
+				else
+				{
+					echo "Password didnot match";
+					
 
-				header("location: user.php");
-			}else{
-				echo "invalid uname/password";
+				}
+
 			}
-			
+
 			
 		}
 
-	}else{
-		//echo "invalid request! please login first!";
-		header("location: login.php");
 	}
-	
-	
+	else
+	{
+		header("location:login.php");
+	}
+
 ?>
